@@ -3,7 +3,6 @@
 import { motion } from "framer-motion";
 import {
   Settings as SettingsIcon,
-  Sliders,
   Hand,
   Camera,
   Gauge,
@@ -13,6 +12,9 @@ import {
   CheckCircle2,
   Eye,
   Sparkles,
+  RefreshCw,
+  Cloud,
+  CloudOff,
 } from "lucide-react";
 import { useNexus } from "@/store/nexusStore";
 import { GlassCard, PanelTitle } from "../shared";
@@ -27,6 +29,11 @@ export function Settings() {
   const setGesture = useNexus((s) => s.setGesture);
   const ideas = useNexus((s) => s.ideas);
   const projects = useNexus((s) => s.projects);
+  const cloud = useNexus((s) => s.cloud);
+  const requestCloudSync = useNexus((s) => s.requestCloudSync);
+
+  const cloudConnected = cloud.status === "connected" || cloud.status === "saving";
+  const lastSynced = cloud.lastSynced ? new Date(cloud.lastSynced).toLocaleString() : "Never";
 
   return (
     <div className="space-y-4">
@@ -118,14 +125,34 @@ export function Settings() {
 
         {/* System status */}
         <GlassCard>
-          <SectionHeader icon={Database} title="System Status" desc="Local data + storage" />
+          <SectionHeader icon={Database} title="System Status" desc="Local data + cloud save" />
           <div className="space-y-2">
             <StatusRow label="Ideas stored" value={`${ideas.length}`} />
             <StatusRow label="Projects stored" value={`${projects.length}`} />
-            <StatusRow label="LocalStorage" value="Active" ok />
-            <StatusRow label="Backend" value="Not required" />
+            <StatusRow label="Local save" value="Active" ok />
+            <StatusRow
+              label="Cloud save"
+              value={cloud.status === "saving" ? "Saving" : cloudConnected ? "Connected" : cloud.status === "loading" ? "Loading" : "Disconnected"}
+              ok={cloudConnected}
+              icon={cloudConnected ? <Cloud size={11} /> : <CloudOff size={11} />}
+            />
+            <StatusRow label="Last synced" value={lastSynced} ok={cloudConnected} />
             <StatusRow label="Secrets in browser" value="None" ok />
           </div>
+          {cloud.error && (
+            <p className="mt-2 rounded-lg border border-red-400/20 bg-red-400/10 px-3 py-2 text-[11px] text-red-100/75">
+              Cloud warning: {cloud.error}
+            </p>
+          )}
+          <button
+            onClick={() => {
+              requestCloudSync();
+              toast("Cloud sync requested", { description: "StarrBoard will save the current state to Supabase." });
+            }}
+            className="mt-3 flex w-full items-center justify-center gap-1.5 rounded-lg border border-emerald-400/30 bg-emerald-400/10 py-2 text-xs text-emerald-200 transition hover:bg-emerald-400/20"
+          >
+            <RefreshCw size={13} /> Sync Now
+          </button>
           <button
             onClick={() => {
               if (confirm("Reset all local data? This restores mock data and clears your ideas/projects/settings.")) {
@@ -133,7 +160,7 @@ export function Settings() {
                 toast("Data reset", { description: "Nexus restored to defaults." });
               }
             }}
-            className="mt-3 flex w-full items-center justify-center gap-1.5 rounded-lg border border-red-400/30 bg-red-400/10 py-2 text-xs text-red-200 transition hover:bg-red-400/20"
+            className="mt-2 flex w-full items-center justify-center gap-1.5 rounded-lg border border-red-400/30 bg-red-400/10 py-2 text-xs text-red-200 transition hover:bg-red-400/20"
           >
             <Trash2 size={13} /> Reset Local Data
           </button>
@@ -172,7 +199,7 @@ export function Settings() {
           ))}
         </div>
         <p className="mt-3 flex items-center gap-1.5 text-[11px] text-violet-300/50">
-          <Eye size={11} /> Nothing connects externally yet. All data stays local + mocked for now.
+          <Eye size={11} /> Supabase now handles app state. Agents and external tools still require explicit future wiring.
         </p>
       </GlassCard>
     </div>
@@ -230,12 +257,13 @@ function Toggle({
   );
 }
 
-function StatusRow({ label, value, ok }: { label: string; value: string; ok?: boolean }) {
+function StatusRow({ label, value, ok, icon }: { label: string; value: string; ok?: boolean; icon?: React.ReactNode }) {
   return (
-    <div className="flex items-center justify-between rounded-lg border border-white/5 bg-black/20 px-3 py-2">
+    <div className="flex items-center justify-between gap-3 rounded-lg border border-white/5 bg-black/20 px-3 py-2">
       <span className="font-hud text-[10px] uppercase tracking-widest text-violet-300/60">{label}</span>
-      <span className={cn("flex items-center gap-1 font-hud text-[10px] uppercase tracking-widest", ok ? "text-emerald-300" : "text-amber-300/70")}>
-        {ok && <CheckCircle2 size={11} />}
+      <span className={cn("flex items-center gap-1 text-right font-hud text-[10px] uppercase tracking-widest", ok ? "text-emerald-300" : "text-amber-300/70")}>
+        {icon}
+        {ok && !icon && <CheckCircle2 size={11} />}
         {value}
       </span>
     </div>
