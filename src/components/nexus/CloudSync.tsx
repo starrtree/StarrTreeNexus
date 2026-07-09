@@ -74,12 +74,14 @@ export function CloudSync() {
         if (cancelled) return;
 
         const cloudState = result.state ?? {};
-        if (Object.keys(cloudState).length > 0) {
+        const hasCloudState = Object.keys(cloudState).length > 0;
+
+        if (hasCloudState) {
           hydrateFromCloud(cloudState);
         }
 
         const snapshot = buildCloudSnapshot(useNexus.getState());
-        lastSnapshotRef.current = JSON.stringify(snapshot);
+        lastSnapshotRef.current = hasCloudState ? JSON.stringify(snapshot) : "";
         loadedRef.current = true;
 
         setCloudStatus({
@@ -87,6 +89,12 @@ export function CloudSync() {
           lastSynced: result.updatedAt ? Date.parse(result.updatedAt) : Date.now(),
           error: null,
         });
+
+        // First-time setup: Supabase row exists but has no app state yet.
+        // Push the current local/default state up so future devices can hydrate from it.
+        if (!hasCloudState) {
+          void saveNow();
+        }
       } catch (error) {
         if (cancelled) return;
         loadedRef.current = true;
