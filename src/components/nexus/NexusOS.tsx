@@ -10,6 +10,7 @@ import { Topbar } from "./Topbar";
 import { CommandDock } from "./CommandDock";
 import { IntelligencePanel } from "./IntelligencePanel";
 import { GestureControl } from "./GestureControl";
+import { CloudSync } from "./CloudSync";
 import { NexusHome } from "./screens/NexusHome";
 import { StarrMap } from "./screens/StarrMap";
 import { MissionControl } from "./screens/MissionControl";
@@ -116,6 +117,7 @@ export function NexusOS() {
 
   return (
     <div className={motionLevel === "reduced" || motionLevel === "minimal" ? "reduce-motion" : ""}>
+      <CloudSync />
       <ParticleField intensity={useNexus.getState().settings.themeIntensity} />
 
       <AnimatePresence>
@@ -193,7 +195,7 @@ export function NexusOS() {
                     </span>
                   </div>
                   <p className="font-hud text-[9px] uppercase tracking-widest text-violet-300/30">
-                    Command the branches · Build the future · Local + mocked
+                    Command the branches · Build the future · Local + cloud sync
                   </p>
                 </footer>
               </main>
