@@ -39,7 +39,6 @@ const STARRBOARD_TITLE = "S★T☆A✪R✦R✧B✰O✯A✶R✵D";
 
 export function NexusOS() {
   const booted = useNexus((s) => s.booted);
-  const setBooted = useNexus((s) => s.setBooted);
   const section = useNexus((s) => s.section);
   const setSection = useNexus((s) => s.setSection);
   const focusMode = useNexus((s) => s.focusMode);
@@ -51,6 +50,19 @@ export function NexusOS() {
 
   const [mobileNav, setMobileNav] = useState(false);
   const [mobileIntel, setMobileIntel] = useState(false);
+
+  useEffect(() => {
+    document.documentElement.classList.toggle("starrboard-light-root", themeMode === "light");
+    document.body.classList.toggle("starrboard-light-body", themeMode === "light");
+
+    // Prevent the browser from preserving an outer-page scroll position when switching themes.
+    window.scrollTo({ top: 0, left: 0, behavior: "instant" as ScrollBehavior });
+
+    return () => {
+      document.documentElement.classList.remove("starrboard-light-root");
+      document.body.classList.remove("starrboard-light-body");
+    };
+  }, [themeMode]);
 
   // Keyboard shortcuts
   useEffect(() => {
@@ -122,7 +134,7 @@ export function NexusOS() {
     <div
       className={`${motionLevel === "reduced" || motionLevel === "minimal" ? "reduce-motion" : ""} ${
         themeMode === "light" ? "starrboard-light" : ""
-      } min-h-screen`}
+      } fixed inset-0 h-[100dvh] w-screen overflow-hidden overscroll-none`}
     >
       <CloudSync />
       <ParticleField intensity={useNexus.getState().settings.themeIntensity} />
@@ -136,11 +148,11 @@ export function NexusOS() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.6 }}
-          className="flex min-h-screen flex-col"
+          className="flex h-full min-h-0 flex-col overflow-hidden"
         >
-          <div className="flex min-h-screen flex-1">
+          <div className="flex min-h-0 flex-1 overflow-hidden">
             {/* Sidebar — desktop */}
-            <div className="sticky top-0 hidden h-screen w-[248px] shrink-0 lg:block">
+            <div className="hidden h-full w-[248px] shrink-0 lg:block">
               <Sidebar />
             </div>
 
@@ -168,10 +180,10 @@ export function NexusOS() {
             </AnimatePresence>
 
             {/* Center column */}
-            <div className="flex min-w-0 flex-1 flex-col">
+            <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
               <Topbar onMenu={() => setMobileNav(true)} />
               <main
-                className={`nexus-scroll flex-1 overflow-y-auto px-3 py-4 sm:px-5 ${
+                className={`nexus-scroll min-h-0 flex-1 overflow-y-auto overscroll-contain px-3 py-4 sm:px-5 ${
                   focusMode ? "relative" : ""
                 }`}
               >
@@ -212,7 +224,7 @@ export function NexusOS() {
 
             {/* Intelligence panel — desktop */}
             {!focusMode && (
-              <div className="sticky top-0 hidden h-screen w-[320px] shrink-0 xl:block">
+              <div className="hidden h-full w-[320px] shrink-0 xl:block">
                 <IntelligencePanel />
               </div>
             )}
