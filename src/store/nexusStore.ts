@@ -37,6 +37,7 @@ export type SectionId =
   | "settings";
 
 export interface NexusSettings {
+  themeMode: "dark" | "light";
   themeIntensity: number; // 0-100
   motionLevel: "full" | "reduced" | "minimal";
   handTracking: boolean;
@@ -123,6 +124,7 @@ interface NexusState {
 }
 
 const defaultSettings: NexusSettings = {
+  themeMode: "dark",
   themeIntensity: 80,
   motionLevel: "full",
   handTracking: false,
