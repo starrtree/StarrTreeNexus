@@ -145,13 +145,17 @@ export function buildCloudSnapshot(state: NexusState): NexusCloudSnapshot {
     agents: state.agents,
     workflows: state.workflows,
     cashflow: state.cashflow,
-    settings: state.settings,
+    settings: { ...defaultSettings, ...state.settings },
     commandLog: state.commandLog,
   };
 }
 
 function hasArrayValue<T>(value: unknown): value is T[] {
   return Array.isArray(value);
+}
+
+function isObject(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
 export const useNexus = create<NexusState>()(
@@ -231,7 +235,7 @@ export const useNexus = create<NexusState>()(
       },
 
       updateSettings: (p) =>
-        set((st) => ({ settings: { ...st.settings, ...p } })),
+        set((st) => ({ settings: { ...defaultSettings, ...st.settings, ...p } })),
       setGesture: (p) => set((st) => ({ gesture: { ...st.gesture, ...p } })),
       setCloudStatus: (p) => set((st) => ({ cloud: { ...st.cloud, ...p } })),
       hydrateFromCloud: (snapshot) => {
@@ -241,7 +245,7 @@ export const useNexus = create<NexusState>()(
           agents: hasArrayValue<Agent>(snapshot.agents) ? snapshot.agents : st.agents,
           workflows: hasArrayValue<Workflow>(snapshot.workflows) ? snapshot.workflows : st.workflows,
           cashflow: hasArrayValue<CashflowLane>(snapshot.cashflow) ? snapshot.cashflow : st.cashflow,
-          settings: snapshot.settings ? { ...st.settings, ...snapshot.settings } : st.settings,
+          settings: snapshot.settings ? { ...defaultSettings, ...st.settings, ...snapshot.settings } : { ...defaultSettings, ...st.settings },
           commandLog: hasArrayValue<CommandLog>(snapshot.commandLog) ? snapshot.commandLog.slice(0, 30) : st.commandLog,
         }));
       },
@@ -352,9 +356,21 @@ export const useNexus = create<NexusState>()(
         agents: s.agents,
         workflows: s.workflows,
         cashflow: s.cashflow,
-        settings: s.settings,
+        settings: { ...defaultSettings, ...s.settings },
         commandLog: s.commandLog,
       }),
+      merge: (persisted, current) => {
+        if (!isObject(persisted)) return current;
+        const persistedSettings = isObject(persisted.settings) ? persisted.settings : {};
+        return {
+          ...current,
+          ...persisted,
+          settings: { ...defaultSettings, ...current.settings, ...persistedSettings },
+          cloud: current.cloud,
+          cloudSyncRequest: current.cloudSyncRequest,
+          booted: current.booted,
+        } as NexusState;
+      },
     },
   ),
 );
