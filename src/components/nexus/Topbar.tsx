@@ -15,7 +15,7 @@ import { useNexus } from "@/store/nexusStore";
 import { cn } from "@/lib/utils";
 
 const SECTION_LABELS: Record<string, string> = {
-  home: "Nexus Home",
+  home: "Board Home",
   starrmap: "StarrMap",
   mission: "Mission Control",
   projects: "Project Rooms",
