@@ -17,13 +17,15 @@ import {
 import { useNexus, type SectionId } from "@/store/nexusStore";
 import { cn } from "@/lib/utils";
 
+const STARRBOARD_TITLE = "S★T☆A✪R✦R✧B✰O✯A✶R✵D";
+
 const NAV: {
   id: SectionId;
   label: string;
   icon: typeof Home;
   hint: string;
 }[] = [
-  { id: "home", label: "Nexus Home", icon: Home, hint: "Mission control" },
+  { id: "home", label: "Board Home", icon: Home, hint: "Mission control" },
   { id: "starrmap", label: "StarrMap", icon: Network, hint: "Living tree" },
   { id: "mission", label: "Mission Control", icon: Crosshair, hint: "Top moves" },
   { id: "projects", label: "Project Rooms", icon: FolderKanban, hint: "Build pipeline" },
@@ -58,12 +60,12 @@ export function Sidebar({ onNav }: { onNav?: () => void }) {
           />
           <div className="relative h-3 w-3 rounded-full bg-white shadow-[0_0_10px_#fff]" />
         </div>
-        <div className="leading-tight">
-          <div className="font-hud text-sm font-bold uppercase tracking-[0.18em] text-amber-100">
-            StarrTree
+        <div className="min-w-0 leading-tight">
+          <div className="font-hud text-[11px] font-bold uppercase tracking-[0.13em] text-amber-100">
+            {STARRBOARD_TITLE}
           </div>
           <div className="font-hud text-[10px] uppercase tracking-[0.3em] text-violet-300/70">
-            Nexus OS
+            OS
           </div>
         </div>
       </div>
