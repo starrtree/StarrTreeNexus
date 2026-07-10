@@ -4,9 +4,12 @@ import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNexus } from "@/store/nexusStore";
 
+const STARRBOARD_TITLE = "S★T☆A✪R✦R✧B✰O✯A✶R✵D";
+
 export function BootSequence() {
   const setBooted = useNexus((s) => s.setBooted);
   const motionLevel = useNexus((s) => s.settings.motionLevel);
+  const themeMode = useNexus((s) => s.settings.themeMode);
   const [phase, setPhase] = useState(0);
 
   useEffect(() => {
@@ -22,13 +25,16 @@ export function BootSequence() {
       setTimeout(() => setBooted(true), 4200),
     ];
     return () => timers.forEach(clearTimeout);
-  }, [motionLevel]);
+  }, [motionLevel, setBooted]);
 
   const skip = () => setBooted(true);
+  const isLight = themeMode === "light";
 
   return (
     <motion.div
-      className="fixed inset-0 z-[100] flex flex-col items-center justify-center overflow-hidden bg-[#05030d]"
+      className={`fixed inset-0 z-[100] flex flex-col items-center justify-center overflow-hidden ${
+        isLight ? "bg-[#fff8df]" : "bg-[#05030d]"
+      }`}
       exit={{ opacity: 0, scale: 1.05 }}
       transition={{ duration: 0.6 }}
     >
@@ -36,8 +42,9 @@ export function BootSequence() {
       <div
         className="pointer-events-none absolute inset-0"
         style={{
-          background:
-            "radial-gradient(circle at 50% 50%, rgba(109,40,217,0.25), transparent 60%)",
+          background: isLight
+            ? "radial-gradient(circle at 50% 50%, rgba(251,191,36,0.28), transparent 55%), radial-gradient(circle at 50% 20%, rgba(139,92,246,0.13), transparent 45%)"
+            : "radial-gradient(circle at 50% 50%, rgba(109,40,217,0.25), transparent 60%)",
         }}
       />
 
@@ -144,11 +151,11 @@ export function BootSequence() {
             <motion.h1
               key="title"
               initial={{ opacity: 0, y: 20, letterSpacing: "0.5em" }}
-              animate={{ opacity: 1, y: 0, letterSpacing: "0.18em" }}
+              animate={{ opacity: 1, y: 0, letterSpacing: "0.13em" }}
               transition={{ duration: 0.9 }}
-              className="font-hud text-2xl font-bold uppercase text-amber-100 text-glow-gold sm:text-4xl"
+              className="font-hud text-xl font-bold uppercase text-amber-100 text-glow-gold sm:text-3xl"
             >
-              StarrTree Nexus OS
+              {STARRBOARD_TITLE}
             </motion.h1>
           )}
         </AnimatePresence>
@@ -179,7 +186,7 @@ export function BootSequence() {
         />
       </div>
       <div className="absolute bottom-8 font-hud text-[10px] uppercase tracking-[0.3em] text-white/40">
-        Initializing neural tree…
+        Initializing StarrBoard…
       </div>
     </motion.div>
   );
