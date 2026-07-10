@@ -35,6 +35,8 @@ const SECTION_ORDER: SectionId[] = [
   "settings",
 ];
 
+const STARRBOARD_TITLE = "S★T☆A✪R✦R✧B✰O✯A✶R✵D";
+
 export function NexusOS() {
   const booted = useNexus((s) => s.booted);
   const setBooted = useNexus((s) => s.setBooted);
@@ -45,6 +47,7 @@ export function NexusOS() {
   const setCommandOpen = useNexus((s) => s.setCommandOpen);
   const setSelectedProject = useNexus((s) => s.setSelectedProject);
   const motionLevel = useNexus((s) => s.settings.motionLevel);
+  const themeMode = useNexus((s) => s.settings.themeMode);
 
   const [mobileNav, setMobileNav] = useState(false);
   const [mobileIntel, setMobileIntel] = useState(false);
@@ -116,7 +119,11 @@ export function NexusOS() {
   };
 
   return (
-    <div className={motionLevel === "reduced" || motionLevel === "minimal" ? "reduce-motion" : ""}>
+    <div
+      className={`${motionLevel === "reduced" || motionLevel === "minimal" ? "reduce-motion" : ""} ${
+        themeMode === "light" ? "starrboard-light" : ""
+      } min-h-screen`}
+    >
       <CloudSync />
       <ParticleField intensity={useNexus.getState().settings.themeIntensity} />
 
@@ -191,7 +198,7 @@ export function NexusOS() {
                       />
                     </div>
                     <span className="font-hud text-[10px] uppercase tracking-[0.3em] text-violet-300/50">
-                      StarrTree Nexus OS
+                      {STARRBOARD_TITLE}
                     </span>
                   </div>
                   <p className="font-hud text-[9px] uppercase tracking-widest text-violet-300/30">
