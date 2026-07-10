@@ -104,6 +104,10 @@
   html,
   body {
     @apply bg-background text-foreground;
+    min-height: 100%;
+    width: 100%;
+    overflow: hidden;
+    overscroll-behavior: none;
     background-color: var(--cosmic-black);
   }
   body {
@@ -276,6 +280,13 @@
 }
 
 /* ===== LIGHT MODE — CELESTIAL DAYBOARD ===== */
+.starrboard-light-root,
+.starrboard-light-body {
+  background-color: #fff8df !important;
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
 .starrboard-light {
   color: #24162f;
   background-image:
@@ -284,6 +295,9 @@
     radial-gradient(ellipse 55% 45% at 0% 85%, rgba(56, 189, 248, 0.12), transparent 60%),
     linear-gradient(180deg, #fff8df 0%, #f7edff 48%, #fffdf5 100%);
   background-attachment: fixed;
+  background-size: cover;
+  isolation: isolate;
+  overscroll-behavior: none;
 }
 
 .starrboard-light::before {
