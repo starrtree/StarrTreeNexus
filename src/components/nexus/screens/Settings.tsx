@@ -1,5 +1,6 @@
 "use client";
 
+import type { ReactNode } from "react";
 import { motion } from "framer-motion";
 import {
   Settings as SettingsIcon,
@@ -15,6 +16,8 @@ import {
   RefreshCw,
   Cloud,
   CloudOff,
+  Sun,
+  Moon,
 } from "lucide-react";
 import { useNexus } from "@/store/nexusStore";
 import { GlassCard, PanelTitle } from "../shared";
@@ -38,10 +41,38 @@ export function Settings() {
   return (
     <div className="space-y-4">
       <GlassCard>
-        <PanelTitle title="Settings" subtitle="Calibrate the Nexus" icon={<SettingsIcon size={16} />} />
+        <PanelTitle title="Settings" subtitle="Calibrate StarrBoard" icon={<SettingsIcon size={16} />} />
       </GlassCard>
 
       <div className="grid gap-4 lg:grid-cols-2">
+        {/* Theme mode */}
+        <GlassCard>
+          <SectionHeader icon={settings.themeMode === "light" ? Sun : Moon} title="Theme Mode" desc="Dark cosmic or light celestial" />
+          <div className="grid grid-cols-2 gap-2">
+            {(["dark", "light"] as const).map((mode) => {
+              const active = settings.themeMode === mode;
+              const Icon = mode === "light" ? Sun : Moon;
+              return (
+                <button
+                  key={mode}
+                  onClick={() => updateSettings({ themeMode: mode })}
+                  className={cn(
+                    "flex items-center justify-center gap-2 rounded-xl border px-3 py-3 font-hud text-[10px] uppercase tracking-widest transition",
+                    active
+                      ? "border-amber-300/60 bg-amber-400/20 text-amber-100"
+                      : "border-violet-400/20 bg-white/5 text-violet-200/60 hover:border-amber-300/30",
+                  )}
+                >
+                  <Icon size={14} /> {mode}
+                </button>
+              );
+            })}
+          </div>
+          <p className="mt-2 text-[11px] text-violet-300/50">
+            Light mode keeps the holographic StarrBoard look, but brightens the whole workspace for daytime use.
+          </p>
+        </GlassCard>
+
         {/* Theme intensity */}
         <GlassCard>
           <SectionHeader icon={Sparkles} title="Theme Intensity" desc="Glow + saturation strength" />
@@ -157,7 +188,7 @@ export function Settings() {
             onClick={() => {
               if (confirm("Reset all local data? This restores mock data and clears your ideas/projects/settings.")) {
                 resetData();
-                toast("Data reset", { description: "Nexus restored to defaults." });
+                toast("Data reset", { description: "StarrBoard restored to defaults." });
               }
             }}
             className="mt-2 flex w-full items-center justify-center gap-1.5 rounded-lg border border-red-400/30 bg-red-400/10 py-2 text-xs text-red-200 transition hover:bg-red-400/20"
@@ -257,7 +288,7 @@ function Toggle({
   );
 }
 
-function StatusRow({ label, value, ok, icon }: { label: string; value: string; ok?: boolean; icon?: React.ReactNode }) {
+function StatusRow({ label, value, ok, icon }: { label: string; value: string; ok?: boolean; icon?: ReactNode }) {
   return (
     <div className="flex items-center justify-between gap-3 rounded-lg border border-white/5 bg-black/20 px-3 py-2">
       <span className="font-hud text-[10px] uppercase tracking-widest text-violet-300/60">{label}</span>
