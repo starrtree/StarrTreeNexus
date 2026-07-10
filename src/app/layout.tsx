@@ -15,10 +15,10 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "StarrTree Nexus OS — Command the Branches",
+  title: "S★T☆A✪R✦R✧B✰O✯A✶R✵D — Command the Branches",
   description:
-    "The cosmic command center for Max Starr / StarrTree. Navigate living branches, summon AI agents, build offers, and turn ideas into cashflow.",
-  keywords: ["StarrTree", "Nexus OS", "AI command center", "Max Starr", "agent control"],
+    "The living StarrBoard command center for Max Starr / StarrTree. Navigate branches, summon AI agents, build offers, and turn ideas into cashflow.",
+  keywords: ["StarrBoard", "StarrTree", "AI command center", "Max Starr", "agent control"],
   authors: [{ name: "Max Starr / StarrTree" }],
   icons: {
     icon: "/logo.svg",
