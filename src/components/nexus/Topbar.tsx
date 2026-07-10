@@ -30,7 +30,6 @@ const SECTION_LABELS: Record<string, string> = {
 export function Topbar({ onMenu }: { onMenu: () => void }) {
   const section = useNexus((s) => s.section);
   const setCommandOpen = useNexus((s) => s.setCommandOpen);
-  const setSection = useNexus((s) => s.setSection);
   const focusMode = useNexus((s) => s.focusMode);
   const setFocusMode = useNexus((s) => s.setFocusMode);
   const gestureEnabled = useNexus((s) => s.gesture.enabled);
