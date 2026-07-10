@@ -43,7 +43,7 @@
   --radius-xl: calc(var(--radius) + 4px);
 }
 
-/* ===== STARRTREE NEXUS OS — COSMIC THEME ===== */
+/* ===== STARRBOARD — COSMIC THEME ===== */
 :root {
   --radius: 0.75rem;
 
@@ -273,6 +273,86 @@
 .font-hud {
   font-family: var(--font-geist-mono), ui-monospace, monospace;
   letter-spacing: 0.04em;
+}
+
+/* ===== LIGHT MODE — CELESTIAL DAYBOARD ===== */
+.starrboard-light {
+  color: #24162f;
+  background-image:
+    radial-gradient(ellipse 85% 55% at 50% -12%, rgba(251, 191, 36, 0.24), transparent 60%),
+    radial-gradient(ellipse 65% 52% at 100% 95%, rgba(139, 92, 246, 0.13), transparent 62%),
+    radial-gradient(ellipse 55% 45% at 0% 85%, rgba(56, 189, 248, 0.12), transparent 60%),
+    linear-gradient(180deg, #fff8df 0%, #f7edff 48%, #fffdf5 100%);
+  background-attachment: fixed;
+}
+
+.starrboard-light::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    radial-gradient(circle at 15% 22%, rgba(251, 191, 36, 0.16), transparent 16%),
+    radial-gradient(circle at 75% 10%, rgba(139, 92, 246, 0.12), transparent 18%),
+    radial-gradient(circle at 50% 100%, rgba(16, 185, 129, 0.08), transparent 22%);
+  z-index: 0;
+}
+
+.starrboard-light > * {
+  position: relative;
+  z-index: 1;
+}
+
+.starrboard-light .glass,
+.starrboard-light .glass-gold {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.72), rgba(255, 247, 214, 0.54));
+  border-color: rgba(122, 69, 210, 0.2);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.75),
+    0 14px 42px rgba(79, 43, 129, 0.13);
+}
+
+.starrboard-light .holo-border::before {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.55), rgba(139, 92, 246, 0.28), rgba(56, 189, 248, 0.34));
+}
+
+.starrboard-light [class*="text-violet-"] {
+  color: rgba(61, 35, 92, 0.72) !important;
+}
+
+.starrboard-light [class*="text-amber-"] {
+  color: rgba(133, 77, 14, 0.95) !important;
+}
+
+.starrboard-light [class*="text-white"],
+.starrboard-light [class*="text-amber-50"],
+.starrboard-light [class*="text-amber-100"] {
+  color: rgba(37, 22, 51, 0.94) !important;
+}
+
+.starrboard-light [class*="bg-black/"] {
+  background-color: rgba(255, 255, 255, 0.42) !important;
+}
+
+.starrboard-light [class*="bg-white/"] {
+  background-color: rgba(255, 255, 255, 0.56) !important;
+}
+
+.starrboard-light [class*="border-violet-"] {
+  border-color: rgba(113, 75, 170, 0.22) !important;
+}
+
+.starrboard-light [class*="border-white/"] {
+  border-color: rgba(113, 75, 170, 0.14) !important;
+}
+
+.starrboard-light canvas {
+  opacity: 0.33;
+  mix-blend-mode: multiply;
+}
+
+.starrboard-light .text-glow-gold {
+  text-shadow: 0 0 10px rgba(245, 158, 11, 0.32), 0 0 22px rgba(251, 191, 36, 0.2);
 }
 
 /* selection */
