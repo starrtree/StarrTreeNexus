@@ -24,6 +24,8 @@ import {
   type SystemAlert,
 } from "@/data/mockData";
 
+const SETTINGS_VERSION = 2 as const;
+
 export type SectionId =
   | "home"
   | "starrmap"
@@ -38,10 +40,9 @@ export type SectionId =
 
 export interface NexusSettings {
   themeMode: "dark" | "light";
-  themeIntensity: number; // 0-100
+  themeVersion: typeof SETTINGS_VERSION;
+  themeIntensity: number;
   motionLevel: "full" | "reduced" | "minimal";
-  handTracking: boolean;
-  gestureSensitivity: number; // 1-10
   soundOn: boolean;
 }
 
@@ -75,13 +76,6 @@ interface NexusState {
   commandOpen: boolean;
   commandLog: CommandLog[];
   settings: NexusSettings;
-  gesture: {
-    enabled: boolean;
-    hands: number;
-    gesture: string;
-    confidence: number;
-    command: string;
-  };
   cloud: {
     status: CloudStatus;
     lastSynced: number | null;
@@ -98,7 +92,6 @@ interface NexusState {
   knowledge: KnowledgeSource[];
   alerts: SystemAlert[];
 
-  // actions
   setBooted: (v: boolean) => void;
   setSection: (s: SectionId) => void;
   setFocusMode: (v: boolean) => void;
@@ -107,7 +100,6 @@ interface NexusState {
   setCommandOpen: (v: boolean) => void;
   runCommand: (text: string) => void;
   updateSettings: (p: Partial<NexusSettings>) => void;
-  setGesture: (p: Partial<NexusState["gesture"]>) => void;
   setCloudStatus: (p: Partial<NexusState["cloud"]>) => void;
   hydrateFromCloud: (snapshot: Partial<NexusCloudSnapshot>) => void;
   requestCloudSync: () => void;
@@ -125,15 +117,41 @@ interface NexusState {
 
 const defaultSettings: NexusSettings = {
   themeMode: "dark",
+  themeVersion: SETTINGS_VERSION,
   themeIntensity: 80,
   motionLevel: "full",
-  handTracking: false,
-  gestureSensitivity: 5,
   soundOn: false,
 };
 
 function uid(prefix: string) {
   return `${prefix}-${Math.random().toString(36).slice(2, 9)}`;
+}
+
+function isObject(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function hasArrayValue<T>(value: unknown): value is T[] {
+  return Array.isArray(value);
+}
+
+function normalizeSettings(value: unknown): NexusSettings {
+  const incoming = isObject(value) ? (value as Partial<NexusSettings> & Record<string, unknown>) : {};
+  const alreadyMigrated = incoming.themeVersion === SETTINGS_VERSION;
+  const requestedTheme = incoming.themeMode === "light" ? "light" : "dark";
+
+  return {
+    ...defaultSettings,
+    ...incoming,
+    themeMode: alreadyMigrated ? requestedTheme : "dark",
+    themeVersion: SETTINGS_VERSION,
+    themeIntensity: typeof incoming.themeIntensity === "number" ? incoming.themeIntensity : defaultSettings.themeIntensity,
+    motionLevel:
+      incoming.motionLevel === "reduced" || incoming.motionLevel === "minimal" || incoming.motionLevel === "full"
+        ? incoming.motionLevel
+        : defaultSettings.motionLevel,
+    soundOn: typeof incoming.soundOn === "boolean" ? incoming.soundOn : defaultSettings.soundOn,
+  };
 }
 
 export function buildCloudSnapshot(state: NexusState): NexusCloudSnapshot {
@@ -145,17 +163,9 @@ export function buildCloudSnapshot(state: NexusState): NexusCloudSnapshot {
     agents: state.agents,
     workflows: state.workflows,
     cashflow: state.cashflow,
-    settings: { ...defaultSettings, ...state.settings },
+    settings: normalizeSettings(state.settings),
     commandLog: state.commandLog,
   };
-}
-
-function hasArrayValue<T>(value: unknown): value is T[] {
-  return Array.isArray(value);
-}
-
-function isObject(value: unknown): value is Record<string, unknown> {
-  return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
 export const useNexus = create<NexusState>()(
@@ -169,13 +179,6 @@ export const useNexus = create<NexusState>()(
       commandOpen: false,
       commandLog: [],
       settings: defaultSettings,
-      gesture: {
-        enabled: false,
-        hands: 0,
-        gesture: "No hand detected",
-        confidence: 0,
-        command: "—",
-      },
       cloud: {
         status: "unknown",
         lastSynced: null,
@@ -235,8 +238,7 @@ export const useNexus = create<NexusState>()(
       },
 
       updateSettings: (p) =>
-        set((st) => ({ settings: { ...defaultSettings, ...st.settings, ...p } })),
-      setGesture: (p) => set((st) => ({ gesture: { ...st.gesture, ...p } })),
+        set((st) => ({ settings: normalizeSettings({ ...st.settings, ...p, themeVersion: SETTINGS_VERSION }) })),
       setCloudStatus: (p) => set((st) => ({ cloud: { ...st.cloud, ...p } })),
       hydrateFromCloud: (snapshot) => {
         set((st) => ({
@@ -245,7 +247,7 @@ export const useNexus = create<NexusState>()(
           agents: hasArrayValue<Agent>(snapshot.agents) ? snapshot.agents : st.agents,
           workflows: hasArrayValue<Workflow>(snapshot.workflows) ? snapshot.workflows : st.workflows,
           cashflow: hasArrayValue<CashflowLane>(snapshot.cashflow) ? snapshot.cashflow : st.cashflow,
-          settings: snapshot.settings ? { ...defaultSettings, ...st.settings, ...snapshot.settings } : { ...defaultSettings, ...st.settings },
+          settings: snapshot.settings ? normalizeSettings(snapshot.settings) : normalizeSettings(st.settings),
           commandLog: hasArrayValue<CommandLog>(snapshot.commandLog) ? snapshot.commandLog.slice(0, 30) : st.commandLog,
         }));
       },
@@ -268,12 +270,9 @@ export const useNexus = create<NexusState>()(
       },
 
       updateIdea: (id, p) =>
-        set((st) => ({
-          ideas: st.ideas.map((i) => (i.id === id ? { ...i, ...p } : i)),
-        })),
+        set((st) => ({ ideas: st.ideas.map((i) => (i.id === id ? { ...i, ...p } : i)) })),
 
-      removeIdea: (id) =>
-        set((st) => ({ ideas: st.ideas.filter((i) => i.id !== id) })),
+      removeIdea: (id) => set((st) => ({ ideas: st.ideas.filter((i) => i.id !== id) })),
 
       promoteIdea: (id) => {
         const idea = get().ideas.find((i) => i.id === id);
@@ -297,9 +296,7 @@ export const useNexus = create<NexusState>()(
         };
         set((st) => ({
           projects: [project, ...st.projects],
-          ideas: st.ideas.map((i) =>
-            i.id === id ? { ...i, status: "build" } : i,
-          ),
+          ideas: st.ideas.map((i) => (i.id === id ? { ...i, status: "build" } : i)),
           selectedProjectId: newId,
           section: "projects",
         }));
@@ -328,11 +325,7 @@ export const useNexus = create<NexusState>()(
       },
 
       updateProject: (id, p) =>
-        set((st) => ({
-          projects: st.projects.map((pr) =>
-            pr.id === id ? { ...pr, ...p } : pr,
-          ),
-        })),
+        set((st) => ({ projects: st.projects.map((pr) => (pr.id === id ? { ...pr, ...p } : pr)) })),
 
       resetData: () =>
         set({
@@ -349,23 +342,21 @@ export const useNexus = create<NexusState>()(
     {
       name: "nexus-os-state",
       storage: createJSONStorage(() => localStorage),
-      // Persist user-facing data + settings locally; CloudSync mirrors this to Supabase.
       partialize: (s) => ({
         ideas: s.ideas,
         projects: s.projects,
         agents: s.agents,
         workflows: s.workflows,
         cashflow: s.cashflow,
-        settings: { ...defaultSettings, ...s.settings },
+        settings: normalizeSettings(s.settings),
         commandLog: s.commandLog,
       }),
       merge: (persisted, current) => {
         if (!isObject(persisted)) return current;
-        const persistedSettings = isObject(persisted.settings) ? persisted.settings : {};
         return {
           ...current,
           ...persisted,
-          settings: { ...defaultSettings, ...current.settings, ...persistedSettings },
+          settings: normalizeSettings(persisted.settings),
           cloud: current.cloud,
           cloudSyncRequest: current.cloudSyncRequest,
           booted: current.booted,
@@ -375,5 +366,4 @@ export const useNexus = create<NexusState>()(
   ),
 );
 
-// expose top moves for convenience
 export { topMoves };
