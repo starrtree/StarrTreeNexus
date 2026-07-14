@@ -55,8 +55,10 @@ export function NexusOS() {
     document.documentElement.classList.toggle("starrboard-light-root", themeMode === "light");
     document.body.classList.toggle("starrboard-light-body", themeMode === "light");
 
-    // Prevent the browser from preserving an outer-page scroll position when switching themes.
-    window.scrollTo({ top: 0, left: 0, behavior: "instant" as ScrollBehavior });
+    // The only valid scroll surface is the app's internal <main>. Keep the document pinned.
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+    window.scrollTo(0, 0);
 
     return () => {
       document.documentElement.classList.remove("starrboard-light-root");
@@ -132,9 +134,9 @@ export function NexusOS() {
 
   return (
     <div
-      className={`${motionLevel === "reduced" || motionLevel === "minimal" ? "reduce-motion" : ""} ${
+      className={`starrboard-shell ${motionLevel === "reduced" || motionLevel === "minimal" ? "reduce-motion" : ""} ${
         themeMode === "light" ? "starrboard-light" : ""
-      } fixed inset-0 h-[100dvh] w-screen overflow-hidden overscroll-none`}
+      }`}
     >
       <CloudSync />
       <ParticleField intensity={useNexus.getState().settings.themeIntensity} />
