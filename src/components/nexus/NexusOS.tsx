@@ -10,7 +10,7 @@ import { Topbar } from "./Topbar";
 import { CommandDock } from "./CommandDock";
 import { IntelligencePanel } from "./IntelligencePanel";
 import { CloudSync } from "./CloudSync";
-import { PlanningAgentDock } from "./PlanningAgentDock";
+import { PlanningAgentDockV2 } from "./PlanningAgentDockV2";
 import { StarrBaseMap } from "./screens/StarrBaseMap";
 import { AgentCollaborationView } from "./screens/AgentCollaborationView";
 import { MissionQueue } from "./screens/MissionQueue";
@@ -49,6 +49,14 @@ export function NexusOS() {
   const [mobileNav, setMobileNav] = useState(false);
   const [mobileIntel, setMobileIntel] = useState(false);
   const [plannerOpen, setPlannerOpen] = useState(false);
+  const [plannerPrompt, setPlannerPrompt] = useState("What are my top priorities right now?");
+  const [plannerAutoRunNonce, setPlannerAutoRunNonce] = useState(0);
+
+  const openPlanner = (prompt = "What are my top priorities right now?", autoRun = false) => {
+    setPlannerPrompt(prompt);
+    setPlannerOpen(true);
+    if (autoRun) setPlannerAutoRunNonce((n) => n + 1);
+  };
 
   useEffect(() => {
     document.documentElement.classList.toggle("starrboard-light-root", themeMode === "light");
@@ -75,7 +83,7 @@ export function NexusOS() {
       }
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "j") {
         e.preventDefault();
-        setPlannerOpen(true);
+        openPlanner();
         return;
       }
       if (typing) return;
@@ -87,9 +95,7 @@ export function NexusOS() {
         setMobileIntel(false);
         setPlannerOpen(false);
       }
-      if (e.key === " ") {
-        e.preventDefault();
-      }
+      if (e.key === " ") e.preventDefault();
       if (e.key === "ArrowRight") {
         const i = SECTION_ORDER.indexOf(section);
         setSection(SECTION_ORDER[(i + 1) % SECTION_ORDER.length]);
@@ -98,9 +104,7 @@ export function NexusOS() {
         const i = SECTION_ORDER.indexOf(section);
         setSection(SECTION_ORDER[(i - 1 + SECTION_ORDER.length) % SECTION_ORDER.length]);
       }
-      if (e.key.toLowerCase() === "f") {
-        setFocusMode(!focusMode);
-      }
+      if (e.key.toLowerCase() === "f") setFocusMode(!focusMode);
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
@@ -178,7 +182,7 @@ export function NexusOS() {
             </AnimatePresence>
 
             <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
-              <Topbar onMenu={() => setMobileNav(true)} onPlanner={() => setPlannerOpen(true)} />
+              <Topbar onMenu={() => setMobileNav(true)} onPlanner={() => openPlanner()} />
               <main
                 className={`nexus-scroll min-h-0 flex-1 overflow-y-auto overscroll-contain px-3 py-4 sm:px-5 ${
                   focusMode ? "relative" : ""
@@ -214,7 +218,7 @@ export function NexusOS() {
                 </footer>
               </main>
 
-              <CommandDock />
+              <CommandDock onPlanner={openPlanner} />
             </div>
 
             {!focusMode && (
@@ -258,7 +262,12 @@ export function NexusOS() {
             </button>
           )}
 
-          <PlanningAgentDock open={plannerOpen} onClose={() => setPlannerOpen(false)} />
+          <PlanningAgentDockV2
+            open={plannerOpen}
+            onClose={() => setPlannerOpen(false)}
+            initialPrompt={plannerPrompt}
+            autoRunNonce={plannerAutoRunNonce}
+          />
 
           <AnimatePresence>
             {focusMode && (
