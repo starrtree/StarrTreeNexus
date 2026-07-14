@@ -1,5 +1,6 @@
 "use client";
 
+import type { ReactNode } from "react";
 import { Crosshair, Flag, ListChecks, Play, ShieldAlert, Users } from "lucide-react";
 import { useNexus } from "@/store/nexusStore";
 import { GlassCard, MiniBar, PanelTitle } from "../shared";
@@ -175,7 +176,7 @@ function Metric({ label, value, suffix = "", warning }: { label: string; value: 
   );
 }
 
-function Detail({ label, icon, children, warning }: { label: string; icon: React.ReactNode; children: React.ReactNode; warning?: boolean }) {
+function Detail({ label, icon, children, warning }: { label: string; icon: ReactNode; children: ReactNode; warning?: boolean }) {
   return (
     <div className={cn("mt-4 rounded-xl border bg-black/20 p-3", warning ? "border-red-400/25" : "border-violet-400/15")}>
       <div className="mb-2 flex items-center gap-1.5 font-hud text-[9px] uppercase tracking-widest text-violet-300/50">
