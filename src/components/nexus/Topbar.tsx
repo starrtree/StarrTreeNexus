@@ -9,6 +9,7 @@ import {
   Minimize2,
   Activity,
   Wifi,
+  BrainCircuit,
 } from "lucide-react";
 import { useNexus } from "@/store/nexusStore";
 import { cn } from "@/lib/utils";
@@ -26,7 +27,7 @@ const SECTION_LABELS: Record<string, string> = {
   settings: "Settings",
 };
 
-export function Topbar({ onMenu }: { onMenu: () => void }) {
+export function Topbar({ onMenu, onPlanner }: { onMenu: () => void; onPlanner?: () => void }) {
   const section = useNexus((s) => s.section);
   const setCommandOpen = useNexus((s) => s.setCommandOpen);
   const focusMode = useNexus((s) => s.focusMode);
@@ -48,15 +49,15 @@ export function Topbar({ onMenu }: { onMenu: () => void }) {
         <Menu size={18} />
       </button>
 
-      <div className="flex items-center gap-2">
-        <span className="font-hud text-[10px] uppercase tracking-[0.3em] text-violet-300/50">
+      <div className="flex min-w-0 items-center gap-2">
+        <span className="hidden font-hud text-[10px] uppercase tracking-[0.3em] text-violet-300/50 sm:inline">
           StarrBase /
         </span>
         <motion.span
           key={section}
           initial={{ opacity: 0, y: -6 }}
           animate={{ opacity: 1, y: 0 }}
-          className="font-hud text-sm font-semibold uppercase tracking-[0.18em] text-amber-100"
+          className="truncate font-hud text-sm font-semibold uppercase tracking-[0.18em] text-amber-100"
         >
           {SECTION_LABELS[section] ?? section}
         </motion.span>
@@ -67,6 +68,15 @@ export function Topbar({ onMenu }: { onMenu: () => void }) {
           <Pill icon={Activity} label="AGENTS ONLINE" color="emerald" />
           <Pill icon={Wifi} label="CLOUD SYNC" color="violet" />
         </div>
+
+        <button
+          onClick={onPlanner}
+          className="flex items-center gap-1.5 rounded-lg border border-amber-300/30 bg-amber-400/10 px-2.5 py-1.5 text-xs text-amber-100 transition hover:border-amber-300/55 hover:bg-amber-400/20"
+          title="Ask Planning Agent"
+        >
+          <BrainCircuit size={14} className="text-amber-300" />
+          <span className="hidden font-hud uppercase tracking-wider md:inline">Ask Planner</span>
+        </button>
 
         <button
           onClick={() => setFocusMode(!focusMode)}
