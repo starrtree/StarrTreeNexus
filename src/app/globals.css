@@ -300,21 +300,23 @@
   overscroll-behavior: none;
 }
 
-.starrboard-light::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  background-image:
-    radial-gradient(circle at 15% 22%, rgba(251, 191, 36, 0.16), transparent 16%),
-    radial-gradient(circle at 75% 10%, rgba(139, 92, 246, 0.12), transparent 18%),
-    radial-gradient(circle at 50% 100%, rgba(16, 185, 129, 0.08), transparent 22%);
-  z-index: 0;
+/* Keep the particle canvas out of layout flow in light mode.
+   Do not use .starrboard-light > * here; it turns the fixed canvas into a giant relative block. */
+.starrboard-light canvas {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  height: 100dvh !important;
+  display: block !important;
+  z-index: -10 !important;
+  opacity: 0.33;
+  mix-blend-mode: multiply;
 }
 
-.starrboard-light > * {
+.starrboard-light .starrboard-ui {
   position: relative;
-  z-index: 1;
+  z-index: 2;
 }
 
 .starrboard-light .glass,
@@ -358,11 +360,6 @@
 
 .starrboard-light [class*="border-white/"] {
   border-color: rgba(113, 75, 170, 0.14) !important;
-}
-
-.starrboard-light canvas {
-  opacity: 0.33;
-  mix-blend-mode: multiply;
 }
 
 .starrboard-light .text-glow-gold {
