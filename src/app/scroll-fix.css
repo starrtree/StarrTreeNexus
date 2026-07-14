@@ -1,0 +1,72 @@
+/* Hard viewport lock for StarrBoard.
+   The app uses its own internal scroll container. The document/body must never scroll,
+   otherwise light-mode background layers can appear as blank space above the UI. */
+html,
+body {
+  height: 100%;
+  min-height: 100%;
+  max-height: 100%;
+  width: 100%;
+  margin: 0;
+  overflow: hidden !important;
+  overscroll-behavior: none !important;
+}
+
+body {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100vh;
+  height: 100dvh;
+}
+
+body > * {
+  min-height: 0;
+  max-height: 100dvh;
+}
+
+.starrboard-shell {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  height: 100dvh !important;
+  min-height: 0 !important;
+  max-height: 100dvh !important;
+  overflow: hidden !important;
+  overscroll-behavior: none !important;
+}
+
+.starrboard-light-root,
+.starrboard-light-body,
+.starrboard-light {
+  min-height: 0 !important;
+  height: 100vh !important;
+  height: 100dvh !important;
+  max-height: 100dvh !important;
+  overflow: hidden !important;
+  overscroll-behavior: none !important;
+}
+
+.starrboard-light::before {
+  position: absolute !important;
+  inset: 0 !important;
+}
+
+.nexus-scroll {
+  min-height: 0 !important;
+  max-height: 100% !important;
+  overflow-y: auto !important;
+  overscroll-behavior-y: contain !important;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Prevent pull-to-refresh / bounce-style empty space on mobile browsers. */
+@supports (-webkit-touch-callout: none) {
+  html,
+  body,
+  .starrboard-shell {
+    height: -webkit-fill-available !important;
+    max-height: -webkit-fill-available !important;
+  }
+}
