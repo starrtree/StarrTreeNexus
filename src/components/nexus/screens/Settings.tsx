@@ -1,11 +1,8 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { motion } from "framer-motion";
 import {
   Settings as SettingsIcon,
-  Hand,
-  Camera,
   Gauge,
   Trash2,
   Database,
@@ -28,8 +25,6 @@ export function Settings() {
   const settings = useNexus((s) => s.settings);
   const updateSettings = useNexus((s) => s.updateSettings);
   const resetData = useNexus((s) => s.resetData);
-  const gesture = useNexus((s) => s.gesture);
-  const setGesture = useNexus((s) => s.setGesture);
   const ideas = useNexus((s) => s.ideas);
   const projects = useNexus((s) => s.projects);
   const cloud = useNexus((s) => s.cloud);
@@ -45,9 +40,8 @@ export function Settings() {
       </GlassCard>
 
       <div className="grid gap-4 lg:grid-cols-2">
-        {/* Theme mode */}
         <GlassCard>
-          <SectionHeader icon={settings.themeMode === "light" ? Sun : Moon} title="Theme Mode" desc="Dark cosmic or light celestial" />
+          <SectionHeader icon={settings.themeMode === "light" ? Sun : Moon} title="Theme Mode" desc="Dark is the default command environment" />
           <div className="grid grid-cols-2 gap-2">
             {(["dark", "light"] as const).map((mode) => {
               const active = settings.themeMode === mode;
@@ -69,11 +63,10 @@ export function Settings() {
             })}
           </div>
           <p className="mt-2 text-[11px] text-violet-300/50">
-            Light mode keeps the holographic StarrBoard look, but brightens the whole workspace for daytime use.
+            StarrBoard boots in dark mode by default. Light mode remains available for daytime review.
           </p>
         </GlassCard>
 
-        {/* Theme intensity */}
         <GlassCard>
           <SectionHeader icon={Sparkles} title="Theme Intensity" desc="Glow + saturation strength" />
           <div className="mb-2 flex items-center justify-between font-hud text-[10px] uppercase tracking-widest text-violet-300/60">
@@ -90,7 +83,6 @@ export function Settings() {
           />
         </GlassCard>
 
-        {/* Motion level */}
         <GlassCard>
           <SectionHeader icon={Gauge} title="Motion Level" desc="Animation intensity" />
           <div className="grid grid-cols-3 gap-2">
@@ -110,51 +102,10 @@ export function Settings() {
             ))}
           </div>
           <p className="mt-2 text-[11px] text-violet-300/50">
-            Reduced motion respects accessibility while keeping the cosmic feel. Minimal skips the boot sequence.
+            Reduced motion respects accessibility while keeping the cosmic command-center feel.
           </p>
         </GlassCard>
 
-        {/* Hand tracking */}
-        <GlassCard>
-          <SectionHeader icon={Hand} title="Hand Control" desc="Camera-based gesture input" />
-          <div className="space-y-3">
-            <Toggle
-              label="Enable Hand Tracking"
-              desc="Uses your camera locally. No video is stored or sent anywhere."
-              on={settings.handTracking}
-              onChange={(v) => {
-                updateSettings({ handTracking: v });
-                setGesture({ enabled: v });
-                if (v) toast("Hand Control enabled", { description: "Grant camera permission when prompted." });
-              }}
-            />
-            <div>
-              <div className="mb-1 flex items-center justify-between font-hud text-[10px] uppercase tracking-widest text-violet-300/60">
-                <span>Gesture Sensitivity</span>
-                <span className="text-amber-300/70">{settings.gestureSensitivity}/10</span>
-              </div>
-              <input
-                type="range"
-                min={1}
-                max={10}
-                value={settings.gestureSensitivity}
-                onChange={(e) => updateSettings({ gestureSensitivity: Number(e.target.value) })}
-                className="w-full accent-amber-400"
-              />
-            </div>
-            <div className="flex items-center gap-2 rounded-lg border border-violet-400/20 bg-black/20 px-3 py-2">
-              <Camera size={13} className="text-amber-300" />
-              <span className="font-hud text-[10px] uppercase tracking-widest text-violet-300/60">
-                Camera status:
-              </span>
-              <span className={cn("font-hud text-[10px] uppercase tracking-widest", gesture.enabled ? "text-emerald-300" : "text-violet-300/40")}>
-                {gesture.enabled ? "Active (local)" : "Off"}
-              </span>
-            </div>
-          </div>
-        </GlassCard>
-
-        {/* System status */}
         <GlassCard>
           <SectionHeader icon={Database} title="System Status" desc="Local data + cloud save" />
           <div className="space-y-2">
@@ -198,22 +149,18 @@ export function Settings() {
         </GlassCard>
       </div>
 
-      {/* Future API placeholders */}
       <GlassCard glow="purple">
-        <SectionHeader icon={Plug} title="Future API Connections" desc="Placeholders for later wiring" />
+        <SectionHeader icon={Plug} title="Agent Platform Connections" desc="Next systems to wire into StarrBase" />
         <div className="grid gap-2 sm:grid-cols-2">
           {[
-            { name: "OpenAI / LLM", desc: "Power UNI Core + agents with real reasoning.", icon: Sparkles },
+            { name: "OpenAI / LLM", desc: "Power UNI Core + agent reasoning.", icon: Sparkles },
             { name: "GitHub", desc: "Builder Agent opens branches + PRs.", icon: Plug },
-            { name: "Google Drive", desc: "Librarian syncs files into the Vault.", icon: Database },
-            { name: "Notion", desc: "Mirror workspaces as vault entries.", icon: Database },
-            { name: "Stripe", desc: "Cashflow Agent tracks real invoices.", icon: Plug },
-            { name: "Calendar", desc: "Personal Ops Guide schedules blocks.", icon: Gauge },
+            { name: "Google Drive", desc: "Librarian Agent organizes files.", icon: Database },
+            { name: "Notion", desc: "Knowledge Agent mirrors workspaces.", icon: Database },
+            { name: "Stripe", desc: "Cashflow Agent tracks offers and invoices.", icon: Plug },
+            { name: "Calendar", desc: "Ops Agent schedules execution blocks.", icon: Gauge },
           ].map((api) => (
-            <div
-              key={api.name}
-              className="flex items-start gap-3 rounded-xl border border-violet-400/15 bg-white/[0.02] p-3"
-            >
+            <div key={api.name} className="flex items-start gap-3 rounded-xl border border-violet-400/15 bg-white/[0.02] p-3">
               <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-violet-400/10 border border-violet-400/25">
                 <api.icon size={15} className="text-violet-300" />
               </div>
@@ -230,7 +177,7 @@ export function Settings() {
           ))}
         </div>
         <p className="mt-3 flex items-center gap-1.5 text-[11px] text-violet-300/50">
-          <Eye size={11} /> Supabase now handles app state. Agents and external tools still require explicit future wiring.
+          <Eye size={11} /> StarrBoard is being narrowed into an AI-agent operations base.
         </p>
       </GlassCard>
     </div>
@@ -248,43 +195,6 @@ function SectionHeader({ icon: Icon, title, desc }: { icon: typeof Sparkles; tit
         <p className="font-hud text-[9px] uppercase tracking-widest text-violet-300/50">{desc}</p>
       </div>
     </div>
-  );
-}
-
-function Toggle({
-  label,
-  desc,
-  on,
-  onChange,
-}: {
-  label: string;
-  desc: string;
-  on: boolean;
-  onChange: (v: boolean) => void;
-}) {
-  return (
-    <button
-      onClick={() => onChange(!on)}
-      className="flex w-full items-center justify-between rounded-xl border border-violet-400/20 bg-black/20 p-3 text-left transition hover:border-amber-300/30"
-    >
-      <div className="min-w-0 flex-1 pr-3">
-        <div className="text-sm font-medium text-amber-50">{label}</div>
-        <div className="text-[11px] text-violet-100/60">{desc}</div>
-      </div>
-      <div
-        className={cn(
-          "relative h-6 w-11 shrink-0 rounded-full transition",
-          on ? "bg-amber-400" : "bg-white/15",
-        )}
-      >
-        <motion.div
-          layout
-          className="absolute top-0.5 h-5 w-5 rounded-full bg-white shadow"
-          style={{ left: on ? "calc(100% - 1.375rem)" : "0.125rem" }}
-          transition={{ type: "spring", stiffness: 500, damping: 30 }}
-        />
-      </div>
-    </button>
   );
 }
 
