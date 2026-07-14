@@ -10,6 +10,7 @@ import { Topbar } from "./Topbar";
 import { CommandDock } from "./CommandDock";
 import { IntelligencePanel } from "./IntelligencePanel";
 import { CloudSync } from "./CloudSync";
+import { PlanningAgentDock } from "./PlanningAgentDock";
 import { StarrBaseMap } from "./screens/StarrBaseMap";
 import { AgentCollaborationView } from "./screens/AgentCollaborationView";
 import { MissionQueue } from "./screens/MissionQueue";
@@ -47,6 +48,7 @@ export function NexusOS() {
 
   const [mobileNav, setMobileNav] = useState(false);
   const [mobileIntel, setMobileIntel] = useState(false);
+  const [plannerOpen, setPlannerOpen] = useState(false);
 
   useEffect(() => {
     document.documentElement.classList.toggle("starrboard-light-root", themeMode === "light");
@@ -71,6 +73,11 @@ export function NexusOS() {
         setCommandOpen(true);
         return;
       }
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "j") {
+        e.preventDefault();
+        setPlannerOpen(true);
+        return;
+      }
       if (typing) return;
       if (e.key === "Escape") {
         setFocusMode(false);
@@ -78,6 +85,7 @@ export function NexusOS() {
         setSelectedProject(null);
         setMobileNav(false);
         setMobileIntel(false);
+        setPlannerOpen(false);
       }
       if (e.key === " ") {
         e.preventDefault();
@@ -170,7 +178,7 @@ export function NexusOS() {
             </AnimatePresence>
 
             <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
-              <Topbar onMenu={() => setMobileNav(true)} />
+              <Topbar onMenu={() => setMobileNav(true)} onPlanner={() => setPlannerOpen(true)} />
               <main
                 className={`nexus-scroll min-h-0 flex-1 overflow-y-auto overscroll-contain px-3 py-4 sm:px-5 ${
                   focusMode ? "relative" : ""
@@ -249,6 +257,8 @@ export function NexusOS() {
               </motion.span>
             </button>
           )}
+
+          <PlanningAgentDock open={plannerOpen} onClose={() => setPlannerOpen(false)} />
 
           <AnimatePresence>
             {focusMode && (
