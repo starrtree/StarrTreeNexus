@@ -10,27 +10,25 @@ import { Topbar } from "./Topbar";
 import { CommandDock } from "./CommandDock";
 import { IntelligencePanel } from "./IntelligencePanel";
 import { CloudSync } from "./CloudSync";
-import { NexusHome } from "./screens/NexusHome";
-import { StarrMap } from "./screens/StarrMap";
-import { MissionControl } from "./screens/MissionControl";
-import { ProjectRooms } from "./screens/ProjectRooms";
-import { AgentBay } from "./screens/AgentBay";
-import { WorkflowForge } from "./screens/WorkflowForge";
-import { CashflowCockpit } from "./screens/CashflowCockpit";
-import { IdeaIncubator } from "./screens/IdeaIncubator";
-import { KnowledgeVault } from "./screens/KnowledgeVault";
+import { StarrBaseMap } from "./screens/StarrBaseMap";
+import { AgentCollaborationView } from "./screens/AgentCollaborationView";
+import { MissionQueue } from "./screens/MissionQueue";
+import { AgentDirectory } from "./screens/AgentDirectory";
+import { ToolDock } from "./screens/ToolDock";
+import { RevenueOffice } from "./screens/RevenueOffice";
+import { MissionBacklog } from "./screens/MissionBacklog";
+import { MemoryVaultOps } from "./screens/MemoryVaultOps";
 import { Settings } from "./screens/Settings";
 
 const SECTION_ORDER: SectionId[] = [
   "home",
   "starrmap",
   "mission",
-  "projects",
   "agents",
   "workflows",
+  "vault",
   "cashflow",
   "incubator",
-  "vault",
   "settings",
 ];
 
@@ -103,27 +101,26 @@ export function NexusOS() {
   const renderSection = () => {
     switch (section) {
       case "home":
-        return <NexusHome />;
+        return <StarrBaseMap />;
       case "starrmap":
-        return <StarrMap />;
+        return <AgentCollaborationView />;
       case "mission":
-        return <MissionControl />;
       case "projects":
-        return <ProjectRooms />;
+        return <MissionQueue />;
       case "agents":
-        return <AgentBay />;
+        return <AgentDirectory />;
       case "workflows":
-        return <WorkflowForge />;
+        return <ToolDock />;
       case "cashflow":
-        return <CashflowCockpit />;
+        return <RevenueOffice />;
       case "incubator":
-        return <IdeaIncubator />;
+        return <MissionBacklog />;
       case "vault":
-        return <KnowledgeVault />;
+        return <MemoryVaultOps />;
       case "settings":
         return <Settings />;
       default:
-        return <NexusHome />;
+        return <StarrBaseMap />;
     }
   };
 
@@ -204,7 +201,7 @@ export function NexusOS() {
                     </span>
                   </div>
                   <p className="font-hud text-[9px] uppercase tracking-widest text-violet-300/30">
-                    Command the agents · Track the work · Sync the system
+                    StarrBase · Agent operations · Memory + missions + tools
                   </p>
                 </footer>
               </main>
