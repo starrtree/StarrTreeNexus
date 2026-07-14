@@ -1,5 +1,6 @@
 "use client";
 
+import type { ReactNode } from "react";
 import { Bot, BrainCircuit, CheckCircle2, Cpu, Database, ShieldCheck } from "lucide-react";
 import { useNexus } from "@/store/nexusStore";
 import { GlassCard, MiniBar, PanelTitle } from "../shared";
@@ -174,7 +175,7 @@ function Pill({ label }: { label: string }) {
   );
 }
 
-function Section({ label, icon, children }: { label: string; icon: React.ReactNode; children: React.ReactNode }) {
+function Section({ label, icon, children }: { label: string; icon: ReactNode; children: ReactNode }) {
   return (
     <div className="mt-4 rounded-xl border border-violet-400/15 bg-black/20 p-3">
       <div className="mb-1 flex items-center gap-1.5 font-hud text-[9px] uppercase tracking-widest text-violet-300/50">
