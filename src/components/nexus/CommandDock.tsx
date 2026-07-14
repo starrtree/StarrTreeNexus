@@ -13,20 +13,55 @@ import {
   Zap,
   X,
   CornerDownLeft,
+  BrainCircuit,
 } from "lucide-react";
 import { useNexus } from "@/store/nexusStore";
-import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
 const QUICK_ACTIONS = [
-  { id: "new-project", label: "New Project", icon: Plus, action: "projects" },
-  { id: "new-idea", label: "New Idea", icon: Lightbulb, action: "incubator" },
-  { id: "build-offer", label: "Build Offer", icon: DollarSign, action: "cashflow" },
-  { id: "summon-agents", label: "Summon Agents", icon: Bot, action: "agents" },
-  { id: "launch-mode", label: "Launch Mode", icon: Zap, action: "focus" },
+  { id: "new-project", label: "New Mission", icon: Plus, action: "mission" },
+  { id: "new-idea", label: "Backlog", icon: Lightbulb, action: "incubator" },
+  { id: "build-offer", label: "Cashflow", icon: DollarSign, action: "cashflow" },
+  { id: "summon-agents", label: "Agents", icon: Bot, action: "agents" },
+  { id: "launch-mode", label: "Focus", icon: Zap, action: "focus" },
 ] as const;
 
-export function CommandDock() {
+const PLANNER_SUGGESTIONS = [
+  "What are my top priorities right now?",
+  "Summarize active missions and blockers.",
+  "Organize my backlog into agent missions.",
+  "Which agents should work together next?",
+  "Create a lead tracker for website clients.",
+  "Turn StarrDome into a pitch deck.",
+  "Build me a 7-day content plan.",
+  "Show fastest cashflow move.",
+];
+
+function isPlanningPrompt(value: string) {
+  const text = value.toLowerCase();
+  return [
+    "priority",
+    "priorities",
+    "focus",
+    "summarize",
+    "summary",
+    "organize",
+    "plan",
+    "planning",
+    "what should i",
+    "what are my",
+    "recommend",
+    "blockers",
+    "create",
+    "build me",
+    "turn",
+    "cashflow move",
+    "mission",
+    "backlog",
+  ].some((term) => text.includes(term));
+}
+
+export function CommandDock({ onPlanner }: { onPlanner?: (prompt: string, autoRun?: boolean) => void }) {
   const [text, setText] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
   const commandOpen = useNexus((s) => s.commandOpen);
@@ -41,8 +76,21 @@ export function CommandDock() {
   }, [commandOpen]);
 
   const submit = () => {
-    if (!text.trim()) return;
-    runCommand(text);
+    const prompt = text.trim();
+    if (!prompt) return;
+
+    if (isPlanningPrompt(prompt) && onPlanner) {
+      onPlanner(prompt, true);
+      runCommand(`Planning Agent: ${prompt}`);
+      toast("Opening Planning Agent", {
+        description: "The response will appear in the Planning Agent drawer.",
+      });
+      setText("");
+      setCommandOpen(false);
+      return;
+    }
+
+    runCommand(prompt);
     toast("UNI Core routed your command", {
       description: "Check the command log.",
     });
@@ -52,7 +100,7 @@ export function CommandDock() {
   const quick = (q: (typeof QUICK_ACTIONS)[number]) => {
     if (q.action === "focus") {
       setFocusMode(true);
-      toast("Launch Mode engaged", { description: "Focus Mode on. Press Esc to exit." });
+      toast("Focus Mode engaged", { description: "Press Esc to exit." });
       return;
     }
     setSection(q.action as never);
@@ -61,10 +109,8 @@ export function CommandDock() {
 
   return (
     <>
-      {/* Dock bar */}
       <div className="glass sticky bottom-0 z-30 rounded-t-2xl border-b-0 px-3 py-2.5 sm:px-4">
         <div className="flex items-center gap-2">
-          {/* quick actions */}
           <div className="hidden items-center gap-1.5 md:flex">
             {QUICK_ACTIONS.map((q) => {
               const Icon = q.icon;
@@ -82,7 +128,6 @@ export function CommandDock() {
             })}
           </div>
 
-          {/* mobile quick actions (compact) */}
           <div className="flex items-center gap-1 md:hidden">
             {QUICK_ACTIONS.slice(0, 3).map((q) => {
               const Icon = q.icon;
@@ -99,7 +144,6 @@ export function CommandDock() {
             })}
           </div>
 
-          {/* text input */}
           <div className="flex flex-1 items-center gap-2 rounded-xl border border-violet-400/25 bg-black/30 px-3 py-2 focus-within:border-amber-300/60">
             <Sparkles size={15} className="shrink-0 text-amber-300" />
             <input
@@ -109,7 +153,7 @@ export function CommandDock() {
               onKeyDown={(e) => {
                 if (e.key === "Enter") submit();
               }}
-              placeholder="Command the Nexus…  (try: 'show fastest cashflow move')"
+              placeholder="Ask the Planning Agent…  try: 'what are my top priorities?'"
               className="min-w-0 flex-1 bg-transparent text-sm text-amber-50 placeholder:text-violet-300/40 focus:outline-none"
             />
             <button
@@ -121,19 +165,15 @@ export function CommandDock() {
             </button>
             <button
               onClick={() => {
-                if (text.trim()) {
-                  runCommand(text);
-                  toast("Routed to Agent Bay", { description: "Builder Agent + UNI Core notified." });
-                  setText("");
-                } else {
-                  setSection("agents");
-                }
+                const prompt = text.trim() || "What should I focus on today?";
+                onPlanner?.(prompt, Boolean(text.trim()));
+                setText("");
               }}
-              className="hidden items-center gap-1.5 rounded-md border border-emerald-400/30 bg-emerald-400/10 px-2 py-1 text-xs text-emerald-200 transition hover:bg-emerald-400/20 sm:flex"
-              title="Route to Agent"
+              className="hidden items-center gap-1.5 rounded-md border border-sky-400/30 bg-sky-400/10 px-2 py-1 text-xs text-sky-200 transition hover:bg-sky-400/20 sm:flex"
+              title="Ask Planning Agent"
             >
-              <Bot size={13} />
-              Route
+              <BrainCircuit size={13} />
+              Planner
             </button>
             <button
               onClick={submit}
@@ -146,7 +186,6 @@ export function CommandDock() {
         </div>
       </div>
 
-      {/* Command orb overlay (⌘K) */}
       <AnimatePresence>
         {commandOpen && (
           <motion.div
@@ -174,14 +213,14 @@ export function CommandDock() {
                       background: "radial-gradient(circle,#fde047,#fbbf24,transparent 70%)",
                     }}
                   />
-                  <Sparkles size={15} className="relative text-black" />
+                  <BrainCircuit size={15} className="relative text-black" />
                 </div>
                 <div className="flex-1">
                   <div className="font-hud text-sm font-bold uppercase tracking-widest text-amber-100">
-                    UNI Core Command Orb
+                    Planning Agent Command Orb
                   </div>
                   <div className="font-hud text-[10px] uppercase tracking-widest text-violet-300/60">
-                    Speak your intent
+                    Ask priorities · summaries · missions · organization
                   </div>
                 </div>
                 <button
@@ -193,6 +232,9 @@ export function CommandDock() {
               </div>
 
               <div className="p-5">
+                <div className="rounded-xl border border-sky-300/25 bg-sky-400/10 px-3 py-2 text-xs text-sky-100/80 mb-4">
+                  Planning responses now appear in the right-side Planning Agent drawer. Press Enter and the drawer will open automatically.
+                </div>
                 <div className="flex items-center gap-2 rounded-xl border border-amber-300/30 bg-black/40 px-4 py-3">
                   <input
                     ref={inputRef}
@@ -200,13 +242,10 @@ export function CommandDock() {
                     value={text}
                     onChange={(e) => setText(e.target.value)}
                     onKeyDown={(e) => {
-                      if (e.key === "Enter") {
-                        submit();
-                        setCommandOpen(false);
-                      }
+                      if (e.key === "Enter") submit();
                       if (e.key === "Escape") setCommandOpen(false);
                     }}
-                    placeholder="e.g. 'summon builder agent' · 'show fastest cashflow move'"
+                    placeholder="e.g. 'what are my top priorities?' · 'summarize blockers'"
                     className="flex-1 bg-transparent text-base text-amber-50 placeholder:text-violet-300/40 focus:outline-none"
                   />
                   <kbd className="font-hud rounded border border-white/10 bg-black/40 px-1.5 py-0.5 text-[10px] text-violet-200/60">
@@ -214,22 +253,14 @@ export function CommandDock() {
                   </kbd>
                 </div>
 
-                {/* suggestions */}
                 <div className="mt-4 flex flex-wrap gap-2">
-                  {[
-                    "Add a project editing modal",
-                    "Create a lead tracker for website clients",
-                    "Turn StarrDome into a pitch deck",
-                    "Build me a 7-day content plan",
-                    "Show fastest cashflow move",
-                    "Summon Builder Agent",
-                    "Open Focus Mode",
-                    "Create a new StarrSeed",
-                  ].map((s) => (
+                  {PLANNER_SUGGESTIONS.map((s) => (
                     <button
                       key={s}
                       onClick={() => {
                         setText(s);
+                        onPlanner?.(s, true);
+                        setCommandOpen(false);
                       }}
                       className="rounded-full border border-violet-400/20 bg-white/5 px-3 py-1.5 text-xs text-violet-100/80 transition hover:border-amber-300/50 hover:text-amber-100"
                     >
@@ -238,7 +269,6 @@ export function CommandDock() {
                   ))}
                 </div>
 
-                {/* recent log */}
                 {commandLog.length > 0 && (
                   <div className="mt-4 max-h-40 overflow-y-auto nexus-scroll rounded-xl border border-white/5 bg-black/20 p-2">
                     <div className="px-2 py-1 font-hud text-[9px] uppercase tracking-widest text-violet-300/50">
