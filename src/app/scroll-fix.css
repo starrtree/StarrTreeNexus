@@ -1,6 +1,6 @@
 /* Hard viewport lock for StarrBoard.
    The app uses its own internal scroll container. The document/body must never scroll,
-   otherwise light-mode background layers can appear as blank space above the UI. */
+   otherwise theme backgrounds can appear as blank space above the UI. */
 html,
 body {
   height: 100%;
@@ -25,7 +25,8 @@ body > * {
   max-height: 100dvh;
 }
 
-.starrboard-shell {
+.starrboard-shell,
+.starrboard-light {
   position: fixed !important;
   inset: 0 !important;
   width: 100vw !important;
@@ -38,8 +39,7 @@ body > * {
 }
 
 .starrboard-light-root,
-.starrboard-light-body,
-.starrboard-light {
+.starrboard-light-body {
   min-height: 0 !important;
   height: 100vh !important;
   height: 100dvh !important;
@@ -48,9 +48,30 @@ body > * {
   overscroll-behavior: none !important;
 }
 
-.starrboard-light::before {
-  position: absolute !important;
-  inset: 0 !important;
+/* Critical fix: the previous light-mode pseudo background could sit over the app shell.
+   Disable it completely and use the normal shell background instead. */
+.starrboard-light::before,
+.starrboard-light::after {
+  content: none !important;
+  display: none !important;
+}
+
+.starrboard-light {
+  background:
+    radial-gradient(ellipse 85% 55% at 50% -12%, rgba(251, 191, 36, 0.24), transparent 60%),
+    radial-gradient(ellipse 65% 52% at 100% 95%, rgba(139, 92, 246, 0.13), transparent 62%),
+    radial-gradient(ellipse 55% 45% at 0% 85%, rgba(56, 189, 248, 0.12), transparent 60%),
+    linear-gradient(180deg, #fff8df 0%, #f7edff 48%, #fffdf5 100%) !important;
+  background-size: cover !important;
+}
+
+.starrboard-light > * {
+  position: relative !important;
+  z-index: 5 !important;
+}
+
+.starrboard-light canvas {
+  z-index: 0 !important;
 }
 
 .nexus-scroll {
@@ -65,7 +86,8 @@ body > * {
 @supports (-webkit-touch-callout: none) {
   html,
   body,
-  .starrboard-shell {
+  .starrboard-shell,
+  .starrboard-light {
     height: -webkit-fill-available !important;
     max-height: -webkit-fill-available !important;
   }
