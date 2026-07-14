@@ -150,7 +150,7 @@ export function NexusOS() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.6 }}
-          className="flex h-full min-h-0 flex-col overflow-hidden"
+          className="starrboard-ui flex h-full min-h-0 flex-col overflow-hidden"
         >
           <div className="flex min-h-0 flex-1 overflow-hidden">
             {/* Sidebar — desktop */}
