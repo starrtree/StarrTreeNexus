@@ -38,7 +38,7 @@ import {
   type MemoryZone,
 } from "@/data/starrbaseData";
 
-const SETTINGS_VERSION = 2 as const;
+const SETTINGS_VERSION = 3 as const;
 
 export type SectionId =
   | "home"
@@ -259,7 +259,7 @@ export const useNexus = create<NexusState>()(
       runCommand: (text) => {
         const key = text.trim().toLowerCase();
         const match = commandResponses[key];
-        const agentIntent = key.match(/(?:show|open|ask|tell)\s+(.+?)(?:\s+agent)?(?:\s+to|$)/i)?.[1]?.trim();
+        const agentIntent = key.match(/(?:show|open|ask|tell)\s+(.+?)(?:\s+agent)?(?:\s+to|$)/i)?.[1]?.trim().toLowerCase();
         const matchedAgent = get().agents.find((agent) =>
           agentIntent ? agent.name.toLowerCase().includes(agentIntent) || agent.id.includes(agentIntent.replace(/\s+/g, "-")) : false,
         );
