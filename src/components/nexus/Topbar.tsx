@@ -14,15 +14,15 @@ import { useNexus } from "@/store/nexusStore";
 import { cn } from "@/lib/utils";
 
 const SECTION_LABELS: Record<string, string> = {
-  home: "Board Home",
-  starrmap: "StarrMap",
-  mission: "Mission Control",
-  projects: "Project Rooms",
+  home: "StarrBase",
+  starrmap: "Agent Network",
+  mission: "Mission Queue",
+  projects: "Mission Queue",
   agents: "Agent Bay",
-  workflows: "Workflow Forge",
-  cashflow: "Cashflow Cockpit",
-  incubator: "Idea Incubator",
-  vault: "Knowledge Vault",
+  workflows: "Tool Dock",
+  cashflow: "Cashflow Office",
+  incubator: "Mission Backlog",
+  vault: "Memory Vault",
   settings: "Settings",
 };
 
@@ -50,7 +50,7 @@ export function Topbar({ onMenu }: { onMenu: () => void }) {
 
       <div className="flex items-center gap-2">
         <span className="font-hud text-[10px] uppercase tracking-[0.3em] text-violet-300/50">
-          StarrTree /
+          StarrBase /
         </span>
         <motion.span
           key={section}
@@ -64,8 +64,8 @@ export function Topbar({ onMenu }: { onMenu: () => void }) {
 
       <div className="ml-auto flex items-center gap-1.5 sm:gap-2">
         <div className="hidden items-center gap-1.5 sm:flex">
-          <Pill icon={Activity} label="ONLINE" color="emerald" />
-          <Pill icon={Wifi} label="SYNC" color="violet" />
+          <Pill icon={Activity} label="AGENTS ONLINE" color="emerald" />
+          <Pill icon={Wifi} label="CLOUD SYNC" color="violet" />
         </div>
 
         <button
@@ -86,7 +86,7 @@ export function Topbar({ onMenu }: { onMenu: () => void }) {
           className="flex items-center gap-1.5 rounded-lg border border-violet-400/20 bg-white/5 px-2.5 py-1.5 text-xs text-violet-100/80 transition hover:border-amber-300/40 hover:text-amber-100"
         >
           <CommandIcon size={14} className="text-amber-300" />
-          <span className="hidden font-hud uppercase tracking-wider sm:inline">Command</span>
+          <span className="hidden font-hud uppercase tracking-wider sm:inline">Agent Command</span>
         </button>
 
         <div className="hidden flex-col items-end md:flex">
