@@ -5,7 +5,6 @@ import {
   Home,
   Network,
   Crosshair,
-  FolderKanban,
   Bot,
   Workflow,
   DollarSign,
@@ -25,16 +24,15 @@ const NAV: {
   icon: typeof Home;
   hint: string;
 }[] = [
-  { id: "home", label: "Board Home", icon: Home, hint: "Mission control" },
-  { id: "starrmap", label: "StarrMap", icon: Network, hint: "Living tree" },
-  { id: "mission", label: "Mission Control", icon: Crosshair, hint: "Top moves" },
-  { id: "projects", label: "Project Rooms", icon: FolderKanban, hint: "Build pipeline" },
-  { id: "agents", label: "Agent Bay", icon: Bot, hint: "AI hangar" },
-  { id: "workflows", label: "Workflow Forge", icon: Workflow, hint: "Automations" },
-  { id: "cashflow", label: "Cashflow Cockpit", icon: DollarSign, hint: "Revenue" },
-  { id: "incubator", label: "Idea Incubator", icon: Lightbulb, hint: "Plant seeds" },
-  { id: "vault", label: "Knowledge Vault", icon: BookMarked, hint: "Memory" },
-  { id: "settings", label: "Settings", icon: SettingsIcon, hint: "Calibrate" },
+  { id: "home", label: "StarrBase", icon: Home, hint: "Agent HQ" },
+  { id: "starrmap", label: "Agent Network", icon: Network, hint: "Collaborations" },
+  { id: "mission", label: "Mission Queue", icon: Crosshair, hint: "Active work" },
+  { id: "agents", label: "Agent Bay", icon: Bot, hint: "Roles + status" },
+  { id: "workflows", label: "Tool Dock", icon: Workflow, hint: "Permissions" },
+  { id: "vault", label: "Memory Vault", icon: BookMarked, hint: "Knowledge" },
+  { id: "cashflow", label: "Cashflow Office", icon: DollarSign, hint: "Revenue" },
+  { id: "incubator", label: "Mission Backlog", icon: Lightbulb, hint: "Ideas → agents" },
+  { id: "settings", label: "Settings", icon: SettingsIcon, hint: "System" },
 ];
 
 export function Sidebar({ onNav }: { onNav?: () => void }) {
@@ -44,10 +42,8 @@ export function Sidebar({ onNav }: { onNav?: () => void }) {
 
   return (
     <aside className="glass relative flex h-full w-full flex-col rounded-r-2xl border-l-0">
-      {/* root glow line */}
       <div className="pointer-events-none absolute left-0 top-0 h-full w-[2px] bg-gradient-to-b from-amber-300/0 via-amber-300/60 to-violet-500/0" />
 
-      {/* brand */}
       <div className="flex items-center gap-3 px-5 py-5">
         <div className="relative flex h-9 w-9 items-center justify-center">
           <div
@@ -65,18 +61,17 @@ export function Sidebar({ onNav }: { onNav?: () => void }) {
             {STARRBOARD_TITLE}
           </div>
           <div className="font-hud text-[10px] uppercase tracking-[0.3em] text-violet-300/70">
-            OS
+            StarrBase
           </div>
         </div>
       </div>
 
       <div className="mx-5 h-px bg-gradient-to-r from-transparent via-violet-400/30 to-transparent" />
 
-      {/* nav */}
       <nav className="nexus-scroll flex-1 overflow-y-auto px-3 py-3">
         <ul className="space-y-1">
           {NAV.map((item, i) => {
-            const active = section === item.id;
+            const active = section === item.id || (item.id === "mission" && section === "projects");
             const Icon = item.icon;
             return (
               <motion.li
@@ -129,7 +124,6 @@ export function Sidebar({ onNav }: { onNav?: () => void }) {
 
       <div className="mx-5 h-px bg-gradient-to-r from-transparent via-violet-400/30 to-transparent" />
 
-      {/* command hint */}
       <div className="px-3 py-3">
         <button
           onClick={() => setCommandOpen(true)}
@@ -137,7 +131,7 @@ export function Sidebar({ onNav }: { onNav?: () => void }) {
         >
           <span className="flex items-center gap-2 text-xs text-violet-100/70">
             <CommandIcon size={13} className="text-amber-300" />
-            Command
+            Agent Command
           </span>
           <kbd className="font-hud rounded border border-white/10 bg-black/40 px-1.5 py-0.5 text-[9px] text-violet-200/70">
             ⌘K
