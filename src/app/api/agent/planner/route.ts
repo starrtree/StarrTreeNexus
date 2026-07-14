@@ -247,7 +247,6 @@ async function requestOpenAI(apiKey: string, model: string, payload: Record<stri
       ],
       text: {
         format: { type: "json_object" },
-        verbosity: "low",
       },
     }),
   });
