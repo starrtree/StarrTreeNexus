@@ -9,7 +9,6 @@ import { Sidebar } from "./Sidebar";
 import { Topbar } from "./Topbar";
 import { CommandDock } from "./CommandDock";
 import { IntelligencePanel } from "./IntelligencePanel";
-import { GestureControl } from "./GestureControl";
 import { CloudSync } from "./CloudSync";
 import { NexusHome } from "./screens/NexusHome";
 import { StarrMap } from "./screens/StarrMap";
@@ -55,7 +54,6 @@ export function NexusOS() {
     document.documentElement.classList.toggle("starrboard-light-root", themeMode === "light");
     document.body.classList.toggle("starrboard-light-body", themeMode === "light");
 
-    // The only valid scroll surface is the app's internal <main>. Keep the document pinned.
     document.documentElement.scrollTop = 0;
     document.body.scrollTop = 0;
     window.scrollTo(0, 0);
@@ -66,7 +64,6 @@ export function NexusOS() {
     };
   }, [themeMode]);
 
-  // Keyboard shortcuts
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       const tag = (e.target as HTMLElement)?.tagName;
@@ -86,9 +83,7 @@ export function NexusOS() {
       }
       if (e.key === " ") {
         e.preventDefault();
-        // pulse starrseed — just a fun toast
       }
-      // arrow nav between sections
       if (e.key === "ArrowRight") {
         const i = SECTION_ORDER.indexOf(section);
         setSection(SECTION_ORDER[(i + 1) % SECTION_ORDER.length]);
@@ -141,9 +136,7 @@ export function NexusOS() {
       <CloudSync />
       <ParticleField intensity={useNexus.getState().settings.themeIntensity} />
 
-      <AnimatePresence>
-        {!booted && <BootSequence />}
-      </AnimatePresence>
+      <AnimatePresence>{!booted && <BootSequence />}</AnimatePresence>
 
       {booted && (
         <motion.div
@@ -153,12 +146,10 @@ export function NexusOS() {
           className="starrboard-ui flex h-full min-h-0 flex-col overflow-hidden"
         >
           <div className="flex min-h-0 flex-1 overflow-hidden">
-            {/* Sidebar — desktop */}
             <div className="hidden h-full w-[248px] shrink-0 lg:block">
               <Sidebar />
             </div>
 
-            {/* Sidebar — mobile drawer */}
             <AnimatePresence>
               {mobileNav && (
                 <motion.div
@@ -181,7 +172,6 @@ export function NexusOS() {
               )}
             </AnimatePresence>
 
-            {/* Center column */}
             <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
               <Topbar onMenu={() => setMobileNav(true)} />
               <main
@@ -189,7 +179,6 @@ export function NexusOS() {
                   focusMode ? "relative" : ""
                 }`}
               >
-                {/* Focus mode dim overlay for side panels is handled by layout below */}
                 <AnimatePresence mode="wait">
                   <motion.div
                     key={section}
@@ -202,7 +191,6 @@ export function NexusOS() {
                   </motion.div>
                 </AnimatePresence>
 
-                {/* footer */}
                 <footer className="mt-8 flex flex-col items-center gap-1 py-6 text-center">
                   <div className="flex items-center gap-2">
                     <div className="relative flex h-5 w-5 items-center justify-center">
@@ -216,7 +204,7 @@ export function NexusOS() {
                     </span>
                   </div>
                   <p className="font-hud text-[9px] uppercase tracking-widest text-violet-300/30">
-                    Command the branches · Build the future · Local + cloud sync
+                    Command the agents · Track the work · Sync the system
                   </p>
                 </footer>
               </main>
@@ -224,14 +212,12 @@ export function NexusOS() {
               <CommandDock />
             </div>
 
-            {/* Intelligence panel — desktop */}
             {!focusMode && (
               <div className="hidden h-full w-[320px] shrink-0 xl:block">
                 <IntelligencePanel />
               </div>
             )}
 
-            {/* Intelligence panel — mobile drawer */}
             <AnimatePresence>
               {mobileIntel && !focusMode && (
                 <motion.div
@@ -255,26 +241,18 @@ export function NexusOS() {
             </AnimatePresence>
           </div>
 
-          {/* Mobile intel toggle floating button */}
           {!focusMode && (
             <button
               onClick={() => setMobileIntel(true)}
               className="fixed bottom-24 left-4 z-40 flex h-11 w-11 items-center justify-center rounded-full border border-amber-300/40 bg-amber-400/15 text-amber-200 backdrop-blur transition hover:bg-amber-400/25 xl:hidden"
               title="Live Intel"
             >
-              <motion.span
-                animate={{ scale: [1, 1.15, 1] }}
-                transition={{ duration: 2, repeat: Infinity }}
-              >
+              <motion.span animate={{ scale: [1, 1.15, 1] }} transition={{ duration: 2, repeat: Infinity }}>
                 ●
               </motion.span>
             </button>
           )}
 
-          {/* Gesture control floating panel */}
-          <GestureControl />
-
-          {/* Focus mode badge */}
           <AnimatePresence>
             {focusMode && (
               <motion.div
