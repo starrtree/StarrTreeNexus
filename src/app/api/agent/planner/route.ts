@@ -242,7 +242,7 @@ async function requestOpenAI(apiKey: string, model: string, payload: Record<stri
       input: [
         {
           role: "user",
-          content: JSON.stringify(payload),
+          content: `Return JSON only. Analyze this StarrBoard planning request and board state:\n${JSON.stringify(payload)}`,
         },
       ],
       text: {
